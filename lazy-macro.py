@@ -3,6 +3,15 @@
 import requests
 from decouple import config
 import pandas as pd
+import math
+import numpy as np
+import pytz
+import datetime as dt
+import calendar
+import time
+import sys
+import io
+import json
 
 # API NINJA
 
@@ -121,17 +130,15 @@ def get_hurdle_rate():
         y2 = f"- 2Y: {y2y}% (8d EMA)"
         y2_full = f"- 2Y% hist: {y2y_8d}"
         
-        message = f"\n{curr_hr}\n{b5}\n{b5_full}\n{y2}\n{y2_full}\n"
-        print(message)
+        message = f"{curr_hr}\n{b5}\n{b5_full}\n{y2}\n{y2_full}"
     except Exception as e:
-        print(f"ERROR: Could not derive hurdle rate: {e}")
-        print("DEFAULTING TO 2.0%")
-    return hurdle_rate_yield
+        raise Exception(f"ERROR: Could not derive hurdle rate: {e}")
+    return hurdle_rate_yield, message
 
 
 if __name__ == '__main__':
     
-    hr = get_hurdle_rate()
+    hry, hry_msg = get_hurdle_rate()
     
     gold = commodity_price('gold')
     silver = commodity_price('silver')
@@ -147,12 +154,14 @@ if __name__ == '__main__':
     vea = equity_price('VEA')
     vwo = equity_price('VWO')
     
-    print(f"Hurdle Rate: {hr:.2f}%")
-    print("---")
+    print("~~~ LAZY MACRO ~~~\n")
+    print(hry_msg)
+    print("\n---\n")
     print(f"gold: {gold:.2f} -- silver: {silver:.2f} -- copper: {copper:.2f}")
     print(f"lumber: {lumber:.2f} -- brent crude oil: {brent_crude_oil:.2f} -- natgas: {natural_gas:.2f}")
-    print("---")
+    print("\n---\n")
     print(f"SPY: {spy:.2f} -- QQQ: {qqq:.2f} -- DIA: {dia:.2f}")
     print(f"IWM: {iwm:.2f} -- VEA: {vea:.2f} -- VWO: {vwo:.2f}")
+    print("\n---\n")
     
     
