@@ -38,6 +38,20 @@ def equity_price(symbol):
     else:
         return f"Error: {response.status_code}, {response.text}"
 
+# ALPHA VANTAGE
+
+ALPHA_VANTAGE_API_KEY = config('ALPHA_VANTAGE_API_KEY')
+
+def get_bond_yield(maturity):
+    allowed_maturities = ['3month', '2year', '5year', '7year', '10year', '30year']
+    if maturity not in allowed_maturities:
+        raise Exception(f"maturity of '{maturity}' not in allowed list of maturities: {allowed_maturities}")
+    url = f'https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=daily&maturity={maturity}&apikey={ALPHA_VANTAGE_API_KEY}'
+    r = requests.get(url)
+    data = r.json()
+    curr_yield = float(data['data'][0]['value'])
+    return curr_yield
+
 # MACRO DATA FROM FEDERAL RESERVE
 
 def fred_ema_3d(df):
@@ -140,6 +154,10 @@ if __name__ == '__main__':
     
     hry, hry_msg = get_hurdle_rate()
     
+    y2 = get_bond_yield('2year')
+    y5 = get_bond_yield('5year')
+    y10 = get_bond_yield('10year')
+
     gold = commodity_price('gold')
     silver = commodity_price('silver')
     copper = commodity_price('copper')
@@ -156,6 +174,10 @@ if __name__ == '__main__':
     
     print("~~~ LAZY MACRO ~~~\n")
     print(hry_msg)
+    print("\n---\n")
+    print(f"current 2Y: {y2:.2f}%")
+    print(f"current 5Y: {y5:.2f}%")
+    print(f"current 10Y: {y10:.2f}%")
     print("\n---\n")
     print(f"gold: {gold:.2f} -- silver: {silver:.2f} -- copper: {copper:.2f}")
     print(f"lumber: {lumber:.2f} -- brent crude oil: {brent_crude_oil:.2f} -- natgas: {natural_gas:.2f}")
