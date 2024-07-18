@@ -6,7 +6,9 @@ import pandas as pd
 import math
 import numpy as np
 import pytz
-import datetime as dt
+from datetime import datetime, timezone
+
+
 import calendar
 import time
 import sys
@@ -199,4 +201,9 @@ if __name__ == '__main__':
     print("\nEQUITIES:\n")
     print(f"SPY: ${spy:.2f} / QQQ: ${qqq:.2f} / DIA: ${dia:.2f}")
     print(f"IWM: ${iwm:.2f} / VEA: ${vea:.2f} / VWO: ${vwo:.2f}")
-    print("\n~~~")
+    print("\n~~~\n")
+
+    now_utc = datetime.now(timezone.utc)
+    formatted_date = now_utc.strftime('%Y-%m-%d %H:%M:%S %Z')
+    utc_dt = f"Last updated: {formatted_date}"
+    print(utc_dt)

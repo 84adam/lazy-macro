@@ -13,7 +13,7 @@ source "$VENV_PATH/bin/activate"
 DATA=$(python3 "$SCRIPT_PATH")
 
 # Print the output
-echo "document.writeln (\"$DATA\")"
+echo "$DATA"
 
 # Deactivate the virtual environment
 deactivate
