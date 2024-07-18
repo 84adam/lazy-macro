@@ -23,13 +23,17 @@ INVESTMENT HURDLE RATE: *** 7.920% ***
 
 COMMODITIES:
 
-Gold: $2507.00 / Silver: $30.23 / Copper: $4.28
-Lumber: $489.50 / Brent Crude: $85.45 / NatGas: $2.13
+Gold: $2493.30 / Silver: $29.99 / Copper: $4.26
+Lumber: $494.00 / Brent Crude: $84.64 / NatGas: $2.10
 
 EQUITIES:
 
-SPY: $554.60 / QQQ: $480.01 / DIA: $409.42
-IWM: $220.39 / VEA: $50.84 / VWO: $44.52
+SPY: $552.83 / QQQ: $479.35 / DIA: $406.70
+IWM: $218.05 / VEA: $50.62 / VWO: $44.38
 
 ~~~
+
+Last updated: 2024-07-18 20:12:11 UTC
 ```
+
+Demo: https://xau.ag/lazy-macro
