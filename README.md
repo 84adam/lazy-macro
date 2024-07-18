@@ -6,29 +6,31 @@ Example output:
 ```
 ~~~ LAZY MACRO ~~~
 
-Current Hurdle Rate = 3.770%
+EXPECTED INFLATION: *** 3.750% ***
+
 - 5YBE: 2.2% (8d EMA)
-- 5YBE% hist: [2.23, 2.23, 2.22, 2.22, 2.2, 2.17, 2.19, 2.19]
-- 2Y: 4.55% (8d EMA)
-- 2Y% hist: [4.72, 4.66, 4.64, 4.63, 4.63, 4.56, 4.51, 4.47]
+- 5YBE% hist: [2.23, 2.22, 2.22, 2.2, 2.17, 2.19, 2.19, 2.19]
+- 2Y: 4.52% (8d EMA)
+- 2Y% hist: [4.66, 4.64, 4.63, 4.63, 4.56, 4.51, 4.47, 4.45]
 
----
+BOND YIELDS:
+- 3M: 5.43%
+- 2Y: 4.43%
+- 5Y: 4.09%
+- 10Y: 4.17%
+- 30Y: 4.38%
 
-Current 2Y: 4.44%
-Current 5Y: 4.13%
-Current 10Y: 4.23%
+INVESTMENT HURDLE RATE: *** 7.920% ***
 
----
+COMMODITIES:
 
-gold: 2511.40 -- silver: 30.50 -- copper: 4.41
-lumber: 481.00 -- brent crude oil: 85.03 -- natgas: 2.04
+Gold: $2506.00 / $Silver: 30.20 / $Copper: 4.28
+Lumber: $489.00 / Brent Crude: $85.36 / $NatGas: 2.12
 
----
+EQUITIES:
 
-SPY: 556.97 -- QQQ: 481.77 -- DIA: 411.96
-IWM: 222.31 -- VEA: 51.11 -- VWO: 44.76
+SPY: $554.38 / QQQ: $479.79 / DIA: $409.24
+IWM: $220.36 / VEA: $50.86 / VWO: $44.52
 
----
-
-
+~~~
 ```

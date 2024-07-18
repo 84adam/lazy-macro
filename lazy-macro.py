@@ -151,11 +151,11 @@ def get_expected_inflation_rate():
         message = f"{curr_hr}\n{b5}\n{b5_full}\n{y2}\n{y2_full}"
     except Exception as e:
         raise Exception(f"ERROR: Could not derive expected inflation rate: {e}")
-    return expected_inflation_rate, message
+    return expected_inflation_rate, b5, b5_full, y2, y2_full
 
 if __name__ == '__main__':
     
-    expected_inflation, expected_inflation_msg = get_expected_inflation_rate()
+    expected_inflation, b5, b5_full, y2e, y2e_full = get_expected_inflation_rate()
     
     m3 = get_bond_yield('3month')
     y2 = get_bond_yield('2year')
@@ -181,19 +181,22 @@ if __name__ == '__main__':
     vwo = equity_price('VWO')
     
     print("~~~ LAZY MACRO ~~~")
-    print("\nINFLATION EXPECTATIONS:\n")
-    print(expected_inflation_msg)
+    print(f"\nEXPECTED INFLATION: *** {expected_inflation*100:.3f}% ***\n")
+    print(b5)
+    print(b5_full)
+    print(y2e)
+    print(y2e_full)
     print("\nBOND YIELDS:")
     print(f"- 3M: {m3*100:.2f}%")
     print(f"- 2Y: {y2*100:.2f}%")
     print(f"- 5Y: {y5*100:.2f}%")
     print(f"- 10Y: {y10*100:.2f}%")
     print(f"- 30Y: {y30*100:.2f}%")
-    print("\nINVESTMENT HURDLE RATE: *** {hurdle_rate*100:.3f}% ***\n")
+    print(f"\nINVESTMENT HURDLE RATE: *** {hurdle_rate*100:.3f}% ***")
     print("\nCOMMODITIES:\n")
-    print(f"Gold: {gold:.2f} -- Silver: {silver:.2f} -- Copper: {copper:.2f}")
-    print(f"Lumber: {lumber:.2f} -- Brent Crude: {brent_crude_oil:.2f} -- NatGas: {natural_gas:.2f}")
+    print(f"Gold: ${gold:.2f} / $Silver: {silver:.2f} / $Copper: {copper:.2f}")
+    print(f"Lumber: ${lumber:.2f} / Brent Crude: ${brent_crude_oil:.2f} / $NatGas: {natural_gas:.2f}")
     print("\nEQUITIES:\n")
-    print(f"SPY: {spy:.2f} -- QQQ: {qqq:.2f} -- DIA: {dia:.2f}")
-    print(f"IWM: {iwm:.2f} -- VEA: {vea:.2f} -- VWO: {vwo:.2f}")
-    print("\n---\n")
+    print(f"SPY: ${spy:.2f} / QQQ: ${qqq:.2f} / DIA: ${dia:.2f}")
+    print(f"IWM: ${iwm:.2f} / VEA: ${vea:.2f} / VWO: ${vwo:.2f}")
+    print("\n~~~")
