@@ -181,7 +181,7 @@ if __name__ == '__main__':
     vwo = equity_price('VWO')
     
     print("~~~ LAZY MACRO ~~~")
-    print(f"\nEXPECTED INFLATION: *** {expected_inflation*100:.3f}% ***\n")
+    print(f"\nEXPECTED INFLATION: *** {expected_inflation*100:.3f}% ***")
     print(b5)
     print(b5_full)
     print(y2e)
