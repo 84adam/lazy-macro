@@ -47,9 +47,13 @@ def get_bond_yield(maturity):
     if maturity not in allowed_maturities:
         raise Exception(f"maturity of '{maturity}' not in allowed list of maturities: {allowed_maturities}")
     url = f'https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=daily&maturity={maturity}&apikey={ALPHA_VANTAGE_API_KEY}'
-    r = requests.get(url)
-    data = r.json()
-    curr_yield = float(data['data'][0]['value'])
+    data = None
+    try:
+        r = requests.get(url)
+        data = r.json()
+        curr_yield = float(data['data'][0]['value']) / 100
+    except Exception as e:
+        raise Exception(f"Error fetching bond yield data: {e} - {data}")
     return curr_yield
 
 # MACRO DATA FROM FEDERAL RESERVE
@@ -122,11 +126,11 @@ def breakeven_five_year():
     last_ema_8d = list(df['e8'][-1::])[0]
     return last_ema_8d, full_8d
 
-def get_hurdle_rate():
+def get_expected_inflation_rate():
     """
     Get the average of the 2Y yield and the 5Y inflation breakeven rate
     """
-    hurdle_rate_yield = 0.02
+    expected_inflation_rate = 0.0
     try:
         be5y, be5y_8d = breakeven_five_year()
         y2y, y2y_8d = yield_two_year()
@@ -135,10 +139,10 @@ def get_hurdle_rate():
         # modified average counting 2Y as 2/3 of weighting
         mod_avg = (be5y + y2y + y2y) / 3
         avg = mod_avg
-        hurdle_rate_yield = avg / 100
-        hurdle_rate_yield = round(hurdle_rate_yield, 4)
+        expected_inflation_rate = avg / 100
+        expected_inflation_rate = round(expected_inflation_rate, 4)
         
-        curr_hr = f"Current Hurdle Rate = {hurdle_rate_yield*100:.3f}%"
+        curr_hr = f"Expected Inflation = {expected_inflation_rate*100:.3f}%"
         b5 = f"- 5YBE: {be5y}% (8d EMA)"
         b5_full = f"- 5YBE% hist: {be5y_8d}"
         y2 = f"- 2Y: {y2y}% (8d EMA)"
@@ -146,17 +150,21 @@ def get_hurdle_rate():
         
         message = f"{curr_hr}\n{b5}\n{b5_full}\n{y2}\n{y2_full}"
     except Exception as e:
-        raise Exception(f"ERROR: Could not derive hurdle rate: {e}")
-    return hurdle_rate_yield, message
-
+        raise Exception(f"ERROR: Could not derive expected inflation rate: {e}")
+    return expected_inflation_rate, message
 
 if __name__ == '__main__':
     
-    hry, hry_msg = get_hurdle_rate()
+    expected_inflation, expected_inflation_msg = get_expected_inflation_rate()
     
+    m3 = get_bond_yield('3month')
     y2 = get_bond_yield('2year')
     y5 = get_bond_yield('5year')
     y10 = get_bond_yield('10year')
+    y30 = get_bond_yield('30year')
+
+    risk_free_rate = y10
+    hurdle_rate = expected_inflation + risk_free_rate
 
     gold = commodity_price('gold')
     silver = commodity_price('silver')
@@ -172,18 +180,20 @@ if __name__ == '__main__':
     vea = equity_price('VEA')
     vwo = equity_price('VWO')
     
-    print("~~~ LAZY MACRO ~~~\n")
-    print(hry_msg)
-    print("\n---\n")
-    print(f"Current 2Y: {y2:.2f}%")
-    print(f"Current 5Y: {y5:.2f}%")
-    print(f"Current 10Y: {y10:.2f}%")
-    print("\n---\n")
-    print(f"gold: {gold:.2f} -- silver: {silver:.2f} -- copper: {copper:.2f}")
-    print(f"lumber: {lumber:.2f} -- brent crude oil: {brent_crude_oil:.2f} -- natgas: {natural_gas:.2f}")
-    print("\n---\n")
+    print("~~~ LAZY MACRO ~~~")
+    print("\nINFLATION EXPECTATIONS:\n")
+    print(expected_inflation_msg)
+    print("\nBOND YIELDS:")
+    print(f"- 3M: {m3*100:.2f}%")
+    print(f"- 2Y: {y2*100:.2f}%")
+    print(f"- 5Y: {y5*100:.2f}%")
+    print(f"- 10Y: {y10*100:.2f}%")
+    print(f"- 30Y: {y30*100:.2f}%")
+    print("\nINVESTMENT HURDLE RATE: *** {hurdle_rate*100:.3f}% ***\n")
+    print("\nCOMMODITIES:\n")
+    print(f"Gold: {gold:.2f} -- Silver: {silver:.2f} -- Copper: {copper:.2f}")
+    print(f"Lumber: {lumber:.2f} -- Brent Crude: {brent_crude_oil:.2f} -- NatGas: {natural_gas:.2f}")
+    print("\nEQUITIES:\n")
     print(f"SPY: {spy:.2f} -- QQQ: {qqq:.2f} -- DIA: {dia:.2f}")
     print(f"IWM: {iwm:.2f} -- VEA: {vea:.2f} -- VWO: {vwo:.2f}")
     print("\n---\n")
-    
-    
