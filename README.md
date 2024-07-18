@@ -24,13 +24,13 @@ INVESTMENT HURDLE RATE: *** 7.920% ***
 
 COMMODITIES:
 
-Gold: $2506.00 / $Silver: 30.20 / $Copper: 4.28
-Lumber: $489.00 / Brent Crude: $85.36 / $NatGas: 2.12
+Gold: $2507.00 / Silver: $30.22 / Copper: $4.28
+Lumber: $488.50 / Brent Crude: $85.43 / NatGas: $2.13
 
 EQUITIES:
 
-SPY: $554.38 / QQQ: $479.79 / DIA: $409.24
-IWM: $220.36 / VEA: $50.86 / VWO: $44.52
+SPY: $554.34 / QQQ: $479.68 / DIA: $409.36
+IWM: $220.44 / VEA: $50.85 / VWO: $44.52
 
 ~~~
 ```
