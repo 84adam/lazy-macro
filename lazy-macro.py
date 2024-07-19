@@ -1,19 +1,19 @@
 # lazy-macro.py
 
 import requests
+from requests import Request, Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 from decouple import config
 import pandas as pd
 import math
 import numpy as np
 import pytz
 from datetime import datetime, timezone
-
-
-import calendar
+import json
 import time
+import calendar
 import sys
 import io
-import json
 
 # API NINJA
 
@@ -57,6 +57,29 @@ def get_bond_yield(maturity):
     except Exception as e:
         raise Exception(f"Error fetching bond yield data: {e} - {data}")
     return curr_yield
+
+# COIN MARKET CAP
+
+CMC_API_KEY = config('CMC_API_KEY')
+
+def get_crypto_price(symbol):
+    url = ' https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest'
+    parameters = {
+      'symbol':symbol
+    }
+    headers = {
+      'Accepts': 'application/json',
+      'X-CMC_PRO_API_KEY': CMC_API_KEY,
+    }
+    session = Session()
+    session.headers.update(headers)
+    try:
+        response = session.get(url, params=parameters)
+        data = json.loads(response.text)
+        d = data['data'][symbol][0]['quote']['USD']['price']
+        return d
+    except (ConnectionError, Timeout, TooManyRedirects) as e:
+        return e
 
 # MACRO DATA FROM FEDERAL RESERVE
 
@@ -170,10 +193,19 @@ if __name__ == '__main__':
 
     gold = commodity_price('gold')
     silver = commodity_price('silver')
+    bitcoin = get_crypto_price('BTC')
+    
     copper = commodity_price('copper')
     lumber = commodity_price('lumber')
+    aluminum = commodity_price('aluminum')
+    
+    corn = commodity_price('corn')
+    wheat = commodity_price('wheat')
+    soybean = commodity_price('soybean')
+    
     brent_crude_oil = commodity_price('brent_crude_oil')
     natural_gas = commodity_price('natural_gas')
+    gasoline_rbob = commodity_price('gasoline_rbob')
     
     qqq = equity_price('QQQ')
     spy = equity_price('SPY')
@@ -196,8 +228,10 @@ if __name__ == '__main__':
     print(f"- 30Y: {y30*100:.2f}%")
     print(f"\nINVESTMENT HURDLE RATE: *** {hurdle_rate*100:.3f}% ***")
     print("\nCOMMODITIES:\n")
-    print(f"Gold: ${gold:.2f} / Silver: ${silver:.2f} / Copper: ${copper:.2f}")
-    print(f"Lumber: ${lumber:.2f} / Brent Crude: ${brent_crude_oil:.2f} / NatGas: ${natural_gas:.2f}")
+    print(f"Gold: ${gold:.2f} / Silver: ${silver:.2f} / Bitcoin: ${bitcoin:.2f}")
+    print(f"Copper: ${copper:.2f} / Lumber: ${lumber:.2f} / Aluminum: ${aluminum:.2f}")
+    print(f"Corn: ${corn:.2f} / Wheat: ${wheat:.2f} / Soybeans: ${soybean:.2f}")
+    print(f"Brent Crude: ${brent_crude_oil:.2f} / NatGas: ${natural_gas:.2f} / Gasoline: ${gasoline_rbob:.2f}")
     print("\nEQUITIES:\n")
     print(f"SPY: ${spy:.2f} / QQQ: ${qqq:.2f} / DIA: ${dia:.2f}")
     print(f"IWM: ${iwm:.2f} / VEA: ${vea:.2f} / VWO: ${vwo:.2f}")
@@ -207,3 +241,5 @@ if __name__ == '__main__':
     formatted_date = now_utc.strftime('%Y-%m-%d %H:%M:%S %Z')
     utc_dt = f"Last updated: {formatted_date}"
     print(utc_dt)
+
+    print("\nSource: https://github.com/84adam/lazy-macro")
