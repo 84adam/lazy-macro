@@ -227,6 +227,8 @@ if __name__ == '__main__':
     print(f"- 10Y: {y10*100:.2f}%")
     print(f"- 30Y: {y30*100:.2f}%")
     print(f"\nINVESTMENT HURDLE RATE: *** {hurdle_rate*100:.3f}% ***")
+    print("- (3-year expected inflation) + (10-year treasury bond yield)")
+    print('- "Short-term is less than three years."')
     print("\nCOMMODITIES:\n")
     print(f"Gold: ${gold:.2f} / Silver: ${silver:.2f} / Bitcoin: ${bitcoin:.2f}")
     print(f"Copper: ${copper:.2f} / Lumber: ${lumber:.2f} / Aluminum: ${aluminum:.2f}")
