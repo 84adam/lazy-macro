@@ -7,6 +7,7 @@ from decouple import config
 import pandas as pd
 import math
 import numpy as np
+from fredapi import Fred
 import pytz
 from datetime import datetime, timezone
 import json
@@ -82,6 +83,14 @@ def get_crypto_price(symbol):
         return e
 
 # MACRO DATA FROM FEDERAL RESERVE
+
+def get_30y_mortgage_rates():
+    """
+    Get full 30-year US mortgage rate data using FRED API
+    """
+    fred = Fred(api_key=config('FRED_API_KEY'))
+    y30mort = fred.get_series('MORTGAGE30US')
+    return y30mort
 
 def fred_ema_3d(df):
     """
@@ -191,6 +200,10 @@ if __name__ == '__main__':
     risk_free_rate = y10
     hurdle_rate = expected_inflation + risk_free_rate
 
+    mortgage_data = get_30y_mortgage_rates()
+    latest_30y_mortgage_rate = mortgage_data.iloc[-1]
+    latest_30y_mortgage_date = mortgage_data.iloc[-1:].index[-1].strftime('%Y-%m-%d')
+
     gold = commodity_price('gold')
     silver = commodity_price('silver')
     bitcoin = get_crypto_price('BTC')
@@ -220,20 +233,25 @@ if __name__ == '__main__':
     print(b5_full)
     print(y2e)
     print(y2e_full)
+    
     print("\nBOND YIELDS:")
     print(f"- 3M: {m3*100:.2f}%")
     print(f"- 2Y: {y2*100:.2f}%")
     print(f"- 5Y: {y5*100:.2f}%")
     print(f"- 10Y: {y10*100:.2f}%")
     print(f"- 30Y: {y30*100:.2f}%")
+    print(f"- 30Y Mortgage: {latest_30y_mortgage_rate:.2f}% ({latest_30y_mortgage_date})")
+    
     print(f"\nINVESTMENT HURDLE RATE: *** {hurdle_rate*100:.3f}% ***")
     print("- (3-year expected inflation) + (10-year treasury bond yield)")
     print('- "Short-term is less than three years."')
+    
     print("\nCOMMODITIES:\n")
     print(f"Gold: ${gold:.2f} / Silver: ${silver:.2f} / Bitcoin: ${bitcoin:.2f}")
     print(f"Copper: ${copper:.2f} / Lumber: ${lumber:.2f} / Aluminum: ${aluminum:.2f}")
     print(f"Corn: ${corn:.2f} / Wheat: ${wheat:.2f} / Soybeans: ${soybean:.2f}")
     print(f"Brent Crude: ${brent_crude_oil:.2f} / NatGas: ${natural_gas:.2f} / Gasoline: ${gasoline_rbob:.2f}")
+    
     print("\nEQUITIES:\n")
     print(f"SPY: ${spy:.2f} / QQQ: ${qqq:.2f} / DIA: ${dia:.2f}")
     print(f"IWM: ${iwm:.2f} / VEA: ${vea:.2f} / VWO: ${vwo:.2f}")
