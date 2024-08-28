@@ -201,8 +201,18 @@ if __name__ == '__main__':
     hurdle_rate = expected_inflation + risk_free_rate
 
     mortgage_data = get_30y_mortgage_rates()
-    latest_30y_mortgage_rate = mortgage_data.iloc[-1]
-    latest_30y_mortgage_date = mortgage_data.iloc[-1:].index[-1].strftime('%Y-%m-%d')
+    # select most recent valid rate
+    m_idx = -1
+    m_rates = []
+    for i in range(0,10):
+        m_date = mortgage_data.iloc[m_idx:].index[m_idx].strftime('%y-%m-%d')
+        m_rate = mortgage_data.iloc[m_idx]
+        if m_rate is not None:
+            if m_rate > 0:
+                m_rates.append((m_date, m_rate))
+        m_idx -= 1
+    latest_30y_mortgage_rate = m_rates[0][1]
+    latest_30y_mortgage_date = m_rates[0][0]
 
     gold = commodity_price('gold')
     silver = commodity_price('silver')
