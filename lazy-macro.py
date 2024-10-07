@@ -16,6 +16,11 @@ import calendar
 import sys
 import io
 
+# HELPER FUNCTIONS
+
+def approx_equal(x, y, tol=1e-9):
+    return math.isclose(x, y, abs_tol=tol)
+
 # API NINJA
 
 API_NINJA_KEY = config('API_NINJA_KEY')
@@ -81,6 +86,33 @@ def get_crypto_price(symbol):
         return d
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         return e
+
+# TREASURY YIELD CURVE DATA
+
+def get_yield_curve():
+    """
+    Get Yield Curve History from US Treasury
+    """
+    # full history:
+    # url = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2024/all?type=daily_treasury_yield_curve&field_tdr_date_value=2024&page&_format=csv"
+    # current month only:
+    url = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/all/202410?type=daily_treasury_yield_curve&field_tdr_date_value_month=202410&page&_format=csv"
+    s = requests.get(url).content
+    df = pd.read_csv(io.StringIO(s.decode('utf-8')))
+    # convert 'Date' to datetime format
+    df['Date'] = pd.to_datetime(df['Date'])
+    # sort by date ascending
+    df = df.sort_values(by='Date', ascending=True)
+    cols = ['3 Mo', '2 Yr', '5 Yr', '10 Yr', '30 Yr']
+    # access the latest row (most recent date)
+    latest_row = df.iloc[-1]
+    # extract specific values
+    m3 = latest_row['3 Mo']
+    y2 = latest_row['2 Yr']
+    y5 = latest_row['5 Yr']
+    y10 = latest_row['10 Yr']
+    y30 = latest_row['30 Yr']
+    return m3, y2, y5, y10, y30
 
 # MACRO DATA FROM FEDERAL RESERVE
 
@@ -189,6 +221,8 @@ def get_expected_inflation_rate():
 
 if __name__ == '__main__':
     
+    yc_m3, yc_y2, yc_y5, yc_y10, yc_y30 = get_yield_curve()
+
     expected_inflation, b5, b5_full, y2e, y2e_full = get_expected_inflation_rate()
     
     m3 = get_bond_yield('3month')
@@ -196,6 +230,15 @@ if __name__ == '__main__':
     y5 = get_bond_yield('5year')
     y10 = get_bond_yield('10year')
     y30 = get_bond_yield('30year')
+
+    # temporary workaround for alpha vantage stale bond yield data:
+    # 0.046799999999999994 0.037000000000000005 0.0362 0.0385 0.0418
+    if approx_equal(m3, 0.0468) and approx_equal(y2, 0.037) and approx_equal(y30, 0.0418):
+        m3 = yc_m3 / 100
+        y2 = yc_y2 / 100
+        y5 = yc_y5 / 100
+        y10 = yc_y10 / 100
+        y30 = yc_y30 / 100
 
     risk_free_rate = y10
     hurdle_rate = expected_inflation + risk_free_rate
