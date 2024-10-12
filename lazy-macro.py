@@ -21,6 +21,12 @@ import io
 def approx_equal(x, y, tol=1e-9):
     return math.isclose(x, y, abs_tol=tol)
 
+def check_error(value, error):
+    value = 0.04 if error != None else value
+    if value == None:
+        value = 0.04
+    return value
+
 # API NINJA
 
 API_NINJA_KEY = config('API_NINJA_KEY')
@@ -29,22 +35,28 @@ def commodity_price(commodity):
     """
     API NINJA: Commodity Price
     """
+    error = None
     api_url = f'https://api.api-ninjas.com/v1/commodityprice?name={commodity}'
     response = requests.get(api_url, headers={'X-Api-Key': API_NINJA_KEY})
     if response.status_code == requests.codes.ok:
         p = response.json()['price']
-        return p
+        return p, error
     else:
-        return f"Error: {response.status_code}, {response.text}"
+        error = f"Error: {response.status_code}, {response.text}"
+        return None, error
 
 def equity_price(symbol):
+    """
+    API NINJA: Equity Price
+    """
+    error = None
     api_url = f'https://api.api-ninjas.com/v1/stockprice?ticker={symbol}'
     response = requests.get(api_url, headers={'X-Api-Key': API_NINJA_KEY})
     if response.status_code == requests.codes.ok:
         p = response.json()['price']
-        return p
+        return p, error
     else:
-        return f"Error: {response.status_code}, {response.text}"
+        return None, f"Error: {response.status_code}, {response.text}"
 
 # ALPHA VANTAGE
 
@@ -69,6 +81,10 @@ def get_bond_yield(maturity):
 CMC_API_KEY = config('CMC_API_KEY')
 
 def get_crypto_price(symbol):
+    """
+    get crypto price from coinmarketcap
+    """
+    error = None
     url = ' https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest'
     parameters = {
       'symbol':symbol
@@ -83,9 +99,9 @@ def get_crypto_price(symbol):
         response = session.get(url, params=parameters)
         data = json.loads(response.text)
         d = data['data'][symbol][0]['quote']['USD']['price']
-        return d
+        return d, error
     except (ConnectionError, Timeout, TooManyRedirects) as e:
-        return e
+        return None, e
 
 # TREASURY YIELD CURVE DATA
 
@@ -257,29 +273,64 @@ if __name__ == '__main__':
     latest_30y_mortgage_rate = m_rates[0][1]
     latest_30y_mortgage_date = m_rates[0][0]
 
-    gold = commodity_price('gold')
-    silver = commodity_price('silver')
-    bitcoin = get_crypto_price('BTC')
+    # COMMODITIES
+    gold, gold_e = commodity_price('gold')
+    gold = check_error(gold, gold_e)
+
+    silver, silver_e = commodity_price('silver')
+    silver = check_error(silver, silver_e)
+
+    bitcoin, bitcoin_e = get_crypto_price('BTC')
+    bitcoin = check_error(bitcoin, bitcoin_e)
     
-    copper = commodity_price('copper')
-    lumber = commodity_price('lumber')
-    aluminum = commodity_price('aluminum')
+    copper, copper_e = commodity_price('copper')
+    copper = check_error(copper, copper_e)
+
+    lumber, lumber_e = commodity_price('lumber')
+    lumber = check_error(lumber, lumber_e)
+
+    aluminum, aluminum_e = commodity_price('aluminum')
+    aluminum = check_error(aluminum, aluminum_e)
     
-    corn = commodity_price('corn')
-    wheat = commodity_price('wheat')
-    soybean = commodity_price('soybean')
+    corn, corn_e = commodity_price('corn')
+    corn = check_error(corn, corn_e)
+
+    wheat, wheat_e = commodity_price('wheat')
+    wheat = check_error(wheat, wheat_e)
+
+    soybean, soybean_e = commodity_price('soybean')
+    soybean = check_error(soybean, soybean_e)
+
+    brent_crude_oil, brent_crude_oil_e = commodity_price('brent_crude_oil')
+    brent_crude_oil = check_error(brent_crude_oil, brent_crude_oil_e)
+
+    natural_gas, natural_gas_e = commodity_price('natural_gas')
+    natural_gas = check_error(natural_gas, natural_gas_e)
+
+    gasoline_rbob, gasoline_rbob_e = commodity_price('gasoline_rbob')
+    galoline_rbob = check_error(gasoline_rbob, gasoline_rbob_e)
     
-    brent_crude_oil = commodity_price('brent_crude_oil')
-    natural_gas = commodity_price('natural_gas')
-    gasoline_rbob = commodity_price('gasoline_rbob')
+    # EQUITIES
+    spy, spy_e = equity_price('SPY')
+    spy = check_error(spy, spy_e)
+
+    qqq, qqq_e = equity_price('QQQ')
+    qqq = check_error(qqq, qqq_e)
+
+    dia, dia_e = equity_price('DIA')
+    dia = check_error(dia, dia_e)
+
+    iwm, iwm_e = equity_price('IWM')
+    iwm = check_error(iwm, iwm_e)
+
+    vea, vea_e = equity_price('VEA')
+    vea = check_error(vea, vea_e)
+
+    vwo, vwo_e = equity_price('VWO')
+    vwo = check_error(vwo, vwo_e)
     
-    qqq = equity_price('QQQ')
-    spy = equity_price('SPY')
-    dia = equity_price('DIA')
-    iwm = equity_price('IWM')
-    vea = equity_price('VEA')
-    vwo = equity_price('VWO')
-    
+    # OUTPUT
+
     print("~~~ LAZY MACRO ~~~")
     print(f"\n3-YEAR EXPECTED ANNUAL INFLATION: *** {expected_inflation*100:.3f}% ***")
     print(b5)
@@ -300,14 +351,37 @@ if __name__ == '__main__':
     print('- "Short-term is less than three years."')
     
     print("\nCOMMODITIES:\n")
-    print(f"Gold: ${gold:.2f} / Silver: ${silver:.2f} / Bitcoin: ${bitcoin:.2f}")
-    print(f"Copper: ${copper:.2f} / Lumber: ${lumber:.2f} / Aluminum: ${aluminum:.2f}")
-    print(f"Corn: ${corn:.2f} / Wheat: ${wheat:.2f} / Soybeans: ${soybean:.2f}")
-    print(f"Brent Crude: ${brent_crude_oil:.2f} / NatGas: ${natural_gas:.2f} / Gasoline: ${gasoline_rbob:.2f}")
+
+    try:
+        print(f"Gold: ${gold:.2f} / Silver: ${silver:.2f} / Bitcoin: ${bitcoin:.2f}")
+    except:
+        print(f"Gold: ${gold} / Silver: ${silver} / Bitcoin: ${bitcoin}")
     
+    try:
+        print(f"Copper: ${copper:.2f} / Lumber: ${lumber:.2f} / Aluminum: ${aluminum:.2f}")
+    except:
+        print(f"Copper: ${copper} / Lumber: ${lumber} / Aluminum: ${aluminum}")
+    
+    try:
+        print(f"Corn: ${corn:.2f} / Wheat: ${wheat:.2f} / Soybeans: ${soybean:.2f}")
+    except:
+        print(f"Corn: ${corn} / Wheat: ${wheat} / Soybeans: ${soybean}")
+
+    try:
+        print(f"Brent Crude: ${brent_crude_oil:.2f} / NatGas: ${natural_gas:.2f} / Gasoline: ${gasoline_rbob:.2f}")
+    except:
+        print(f"Brent Crude: ${brent_crude_oil} / NatGas: ${natural_gas} / Gasoline: ${gasoline_rbob}")
+
     print("\nEQUITIES:\n")
-    print(f"SPY: ${spy:.2f} / QQQ: ${qqq:.2f} / DIA: ${dia:.2f}")
-    print(f"IWM: ${iwm:.2f} / VEA: ${vea:.2f} / VWO: ${vwo:.2f}")
+    try:
+        print(f"SPY: ${spy:.2f} / QQQ: ${qqq:.2f} / DIA: ${dia:.2f}")
+    except:
+        print(f"SPY: ${spy} / QQQ: ${qqq} / DIA: ${dia}")
+
+    try:
+        print(f"IWM: ${iwm:.2f} / VEA: ${vea:.2f} / VWO: ${vwo:.2f}")
+    except:
+        print(f"IWM: ${iwm} / VEA: ${vea} / VWO: ${vwo}")
     print("\n~~~\n")
 
     now_utc = datetime.now(timezone.utc)
@@ -316,3 +390,5 @@ if __name__ == '__main__':
     print(utc_dt)
 
     print("\nSource: https://github.com/84adam/lazy-macro")
+
+    print("\nQuestions or suggestions? Contact info [at] xau [dot] ag -- NOTE: Missing prices and those marked at $0.04 are due to recent changes at API NINJA.")
