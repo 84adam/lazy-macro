@@ -63,6 +63,9 @@ def equity_price(symbol):
 ALPHA_VANTAGE_API_KEY = config('ALPHA_VANTAGE_API_KEY')
 
 def get_bond_yield(maturity):
+    """
+    deprecated: previously rates were updated throughout the day
+    """
     allowed_maturities = ['3month', '2year', '5year', '7year', '10year', '30year']
     if maturity not in allowed_maturities:
         raise Exception(f"maturity of '{maturity}' not in allowed list of maturities: {allowed_maturities}")
@@ -119,16 +122,16 @@ def get_yield_curve():
     df['Date'] = pd.to_datetime(df['Date'])
     # sort by date ascending
     df = df.sort_values(by='Date', ascending=True)
-    cols = ['3 Mo', '2 Yr', '5 Yr', '10 Yr', '30 Yr']
     # access the latest row (most recent date)
     latest_row = df.iloc[-1]
     # extract specific values
-    m3 = latest_row['3 Mo']
-    y2 = latest_row['2 Yr']
-    y5 = latest_row['5 Yr']
-    y10 = latest_row['10 Yr']
-    y30 = latest_row['30 Yr']
-    return m3, y2, y5, y10, y30
+    m3 = latest_row['3 Mo'] / 100
+    y2 = latest_row['2 Yr'] / 100
+    y5 = latest_row['5 Yr'] / 100
+    y10 = latest_row['10 Yr'] / 100
+    y30 = latest_row['30 Yr'] / 100
+    date = latest_row['Date'].strftime('%y-%m-%d')
+    return m3, y2, y5, y10, y30, date
 
 # MACRO DATA FROM FEDERAL RESERVE
 
@@ -236,25 +239,11 @@ def get_expected_inflation_rate():
     return expected_inflation_rate, b5, b5_full, y2, y2_full
 
 if __name__ == '__main__':
-    
-    yc_m3, yc_y2, yc_y5, yc_y10, yc_y30 = get_yield_curve()
+
+    # RATES & INFLATION
+    m3, y2, y5, y10, y30, yc_date = get_yield_curve()
 
     expected_inflation, b5, b5_full, y2e, y2e_full = get_expected_inflation_rate()
-    
-    m3 = get_bond_yield('3month')
-    y2 = get_bond_yield('2year')
-    y5 = get_bond_yield('5year')
-    y10 = get_bond_yield('10year')
-    y30 = get_bond_yield('30year')
-
-    # temporary workaround for alpha vantage stale bond yield data:
-    # 0.046799999999999994 0.037000000000000005 0.0362 0.0385 0.0418
-    if approx_equal(m3, 0.0468) and approx_equal(y2, 0.037) and approx_equal(y30, 0.0418):
-        m3 = yc_m3 / 100
-        y2 = yc_y2 / 100
-        y5 = yc_y5 / 100
-        y10 = yc_y10 / 100
-        y30 = yc_y30 / 100
 
     risk_free_rate = y10
     hurdle_rate = expected_inflation + risk_free_rate
@@ -343,7 +332,7 @@ if __name__ == '__main__':
     print(f"- 2Y: {y2*100:.2f}%")
     print(f"- 5Y: {y5*100:.2f}%")
     print(f"- 10Y: {y10*100:.2f}%")
-    print(f"- 30Y: {y30*100:.2f}%")
+    print(f"- 30Y: {y30*100:.2f}% ({yc_date})")
     print(f"- 30Y Mortgage: {latest_30y_mortgage_rate:.2f}% ({latest_30y_mortgage_date})")
     
     print(f"\nINVESTMENT HURDLE RATE: *** {hurdle_rate*100:.3f}% ***")
