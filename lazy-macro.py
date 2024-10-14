@@ -391,4 +391,4 @@ if __name__ == '__main__':
 
     print("\nSource: https://github.com/84adam/lazy-macro")
 
-    print("\nQuestions or suggestions? Contact info [at] xau [dot] ag -- NOTE: Missing prices and those marked at $0.04 are due to recent changes at API NINJA.")
+    print("\nQuestions or suggestions? Contact: info [at] xau [dot] ag")
