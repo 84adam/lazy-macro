@@ -272,14 +272,23 @@ if __name__ == '__main__':
     bitcoin, bitcoin_e = get_crypto_price('BTC')
     bitcoin = check_error(bitcoin, bitcoin_e)
     
+    platinum, platinum_e = commodity_price('platinum')
+    platinum = check_error(platinum, platinum_e)
+
+    palladium, palladium_e = commodity_price('palladium')
+    palladium = check_error(palladium, palladium_e)
+
     copper, copper_e = commodity_price('copper')
     copper = check_error(copper, copper_e)
+
+    aluminum, aluminum_e = commodity_price('aluminum')
+    aluminum = check_error(aluminum, aluminum_e)
 
     lumber, lumber_e = commodity_price('lumber')
     lumber = check_error(lumber, lumber_e)
 
-    aluminum, aluminum_e = commodity_price('aluminum')
-    aluminum = check_error(aluminum, aluminum_e)
+    sugar, sugar_e = commodity_price('sugar')
+    sugar = check_error(sugar, sugar_e)
     
     corn, corn_e = commodity_price('corn')
     corn = check_error(corn, corn_e)
@@ -317,7 +326,16 @@ if __name__ == '__main__':
 
     vwo, vwo_e = equity_price('VWO')
     vwo = check_error(vwo, vwo_e)
-    
+
+    vti, vti_e = equity_price('VTI')
+    vti = check_error(vti, vti_e)
+
+    veu, veu_e = equity_price('VEU')
+    veu = check_error(veu, veu_e)
+
+    spd, spd_e = equity_price('SPD')
+    spd = check_error(spd, spd_e)
+
     # OUTPUT
 
     print("~~~ LAZY MACRO ~~~")
@@ -347,10 +365,15 @@ if __name__ == '__main__':
         print(f"Gold: ${gold} / Silver: ${silver} / Bitcoin: ${bitcoin}")
     
     try:
-        print(f"Copper: ${copper:.2f} / Lumber: ${lumber:.2f} / Aluminum: ${aluminum:.2f}")
+        print(f"Platinum: ${platinum:.2f} / Palladium: ${palladium:.2f} / Copper: ${copper:.2f}")
     except:
-        print(f"Copper: ${copper} / Lumber: ${lumber} / Aluminum: ${aluminum}")
-    
+        print(f"Platinum: ${platinum} / Palladium: ${palladium} / Copper: ${copper}")
+
+    try:
+        print(f"Aluminum: ${aluminum:.2f} / Lumber: ${lumber:.2f} / Sugar: ${sugar:.2f}")
+    except:
+        print(f"Aluminum: ${aluminum} / Lumber: ${lumber} / Sugar: ${sugar}")
+
     try:
         print(f"Corn: ${corn:.2f} / Wheat: ${wheat:.2f} / Soybeans: ${soybean:.2f}")
     except:
@@ -371,6 +394,11 @@ if __name__ == '__main__':
         print(f"IWM: ${iwm:.2f} / VEA: ${vea:.2f} / VWO: ${vwo:.2f}")
     except:
         print(f"IWM: ${iwm} / VEA: ${vea} / VWO: ${vwo}")
+
+    try:
+        print(f"VTI: ${vti:.2f} / VEU: ${veu:.2f} / SPD: ${spd:.2f}")
+    except:
+        print(f"VTI: ${vti} / VEU: ${veu} / SPD: ${spd}")
     print("\n~~~\n")
 
     now_utc = datetime.now(timezone.utc)
