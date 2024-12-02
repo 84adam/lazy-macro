@@ -2,14 +2,23 @@
 
 import requests
 from requests import Request, Session
-from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+from requests.exceptions import (
+    ConnectionError,
+    Timeout,
+    TooManyRedirects
+)
 from decouple import config
 import pandas as pd
 import math
 import numpy as np
 from fredapi import Fred
 import pytz
-from datetime import datetime, timezone
+from datetime import (
+    date,
+    datetime,
+    timezone,
+    timedelta
+)
 import json
 import time
 import calendar
@@ -26,6 +35,15 @@ def check_error(value, error):
     if value == None:
         value = 0.04
     return value
+
+def last_day_of_previous_month():
+    """
+    get last day of previous month as datetime
+    """
+    today = date.today()
+    first_day_of_current_month = date(today.year, today.month, 1)
+    last_day_prev_month = first_day_of_current_month - timedelta(days=1)
+    return last_day_prev_month
 
 # API NINJA
 
@@ -110,27 +128,59 @@ def get_crypto_price(symbol):
 
 def get_yield_curve():
     """
-    Get Yield Curve History from US Treasury
+    get yield curve history from US Treasury for current month
     """
-    # current month only:
     current_year = datetime.now().year
     current_month = datetime.now().month
-    url = f"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/all/{current_year}{current_month}?type=daily_treasury_yield_curve&field_tdr_date_value_month={current_year}{current_month}&page&_format=csv"
-    s = requests.get(url).content
-    df = pd.read_csv(io.StringIO(s.decode('utf-8')))
-    # convert 'Date' to datetime format
-    df['Date'] = pd.to_datetime(df['Date'])
-    # sort by date ascending
-    df = df.sort_values(by='Date', ascending=True)
-    # access the latest row (most recent date)
-    latest_row = df.iloc[-1]
-    # extract specific values
-    m3 = latest_row['3 Mo'] / 100
-    y2 = latest_row['2 Yr'] / 100
-    y5 = latest_row['5 Yr'] / 100
-    y10 = latest_row['10 Yr'] / 100
-    y30 = latest_row['30 Yr'] / 100
-    date = latest_row['Date'].strftime('%y-%m-%d')
+    try:
+        # current day and month
+        url = f"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/all/{current_year}{current_month}?type=daily_treasury_yield_curve&field_tdr_date_value_month={current_year}{current_month}&page&_format=csv"
+        s = requests.get(url).content
+        df = pd.read_csv(io.StringIO(s.decode('utf-8')))
+        # convert 'Date' to datetime format
+        df['Date'] = pd.to_datetime(df['Date'])
+        # sort by date ascending
+        df = df.sort_values(by='Date', ascending=True)
+        # access the latest row (most recent date)
+        latest_row = df.iloc[-1]
+        # extract specific values
+        m3 = latest_row['3 Mo'] / 100
+        y2 = latest_row['2 Yr'] / 100
+        y5 = latest_row['5 Yr'] / 100
+        y10 = latest_row['10 Yr'] / 100
+        y30 = latest_row['30 Yr'] / 100
+        date = latest_row['Date'].strftime('%y-%m-%d')
+    except:
+        try:
+            # if errors, use last day of last month instead
+            lmd = last_day_of_previous_month()
+            current_year = lmd.year
+            current_month = lmd.month
+            url = f"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/all/{current_year}{current_month}?type=daily_treasury_yield_curve&field_tdr_date_value_month={current_year}{current_month}&page&_format=csv"
+            s = requests.get(url).content
+            df = pd.read_csv(io.StringIO(s.decode('utf-8')))
+            # convert 'Date' to datetime format
+            df['Date'] = pd.to_datetime(df['Date'])
+            # sort by date ascending
+            df = df.sort_values(by='Date', ascending=True)
+            # access the latest row (most recent date)
+            latest_row = df.iloc[-1]
+            # extract specific values
+            m3 = latest_row['3 Mo'] / 100
+            y2 = latest_row['2 Yr'] / 100
+            y5 = latest_row['5 Yr'] / 100
+            y10 = latest_row['10 Yr'] / 100
+            y30 = latest_row['30 Yr'] / 100
+            date = latest_row['Date'].strftime('%y-%m-%d')
+        except:
+            m3 = 0.001
+            y2 = 0.001
+            y5 = 0.001
+            y10 = 0.001
+            y30 = 0.001
+            lmd = last_day_of_previous_month()
+            date = lmd
+
     return m3, y2, y5, y10, y30, date
 
 # MACRO DATA FROM FEDERAL RESERVE
