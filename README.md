@@ -26,7 +26,7 @@ INVESTMENT HURDLE RATE: *** 7.780% ***
 
 COMMODITIES:
 
-Gold: $2671.20 / Silver: $31.82 / Bitcoin: $103000.07
+Gold: $2671.20 / Silver: $31.82 / Bitcoin: $103000.07 (!)
 Platinum: $949.00 / Palladium: $985.50 / Copper: $4.18
 Aluminum: $2631.75 / Lumber: $592.00 / Sugar: $20.86
 Corn: $430.25 / Wheat: $547.00 / Soybeans: $986.50
