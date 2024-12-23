@@ -6,41 +6,41 @@ Example output:
 ```
 ~~~ LAZY MACRO ~~~
 
-3-YEAR EXPECTED ANNUAL INFLATION: *** 3.550% ***
-- 5YBE: 2.34% (8d EMA)
-- 5YBE% hist: [2.33, 2.33, 2.35, 2.36, 2.35, 2.33, 2.33, 2.34]
-- 2Y: 4.15% (8d EMA)
-- 2Y% hist: [4.22, 4.17, 4.17, 4.17, 4.15, 4.15, 4.13, 4.13]
+3-YEAR EXPECTED ANNUAL INFLATION: *** 3.630% ***
+- 5YBE: 2.36% (8d EMA)
+- 5YBE% hist: [2.36, 2.37, 2.39, 2.38, 2.37, 2.38, 2.36, 2.35]
+- 2Y: 4.26% (8d EMA)
+- 2Y% hist: [4.14, 4.14, 4.16, 4.21, 4.23, 4.24, 4.29, 4.31]
 
 BOND YIELDS:
-- 3M: 4.41%
-- 2Y: 4.15%
-- 5Y: 4.09%
-- 10Y: 4.22%
-- 30Y: 4.41% (24-12-10)
-- 30Y Mortgage: 6.69% (24-12-05)
+- 3M: 4.34%
+- 2Y: 4.30%
+- 5Y: 4.37%
+- 10Y: 4.52%
+- 30Y: 4.72% (24-12-20)
+- 30Y Mortgage: 6.72% (24-12-19)
 
-INVESTMENT HURDLE RATE: *** 7.770% ***
+INVESTMENT HURDLE RATE: *** 8.150% ***
 - (3-year expected inflation) + (10-year treasury bond yield)
 - "Short-term is less than three years."
 
 COMMODITIES:
 
-Gold: $2732.40 / Silver: $32.63 / Bitcoin: $98549.23
-Platinum: $949.30 / Palladium: $987.00 / Copper: $4.27
-Aluminum: $2566.00 / Lumber: $564.00 / Sugar: $21.16
-Corn: $450.25 / Wheat: $567.25 / Soybeans: $991.25
-Brent Crude: $72.61 / NatGas: $3.28 / Gasoline: $1.98
+Gold: $2627.20 / Silver: $30.23 / Bitcoin: $92890.09
+Platinum: $950.30 / Palladium: $934.00 / Copper: $4.09
+Aluminum: $2512.25 / Lumber: $575.00 / Sugar: $19.52
+Corn: $447.75 / Wheat: $551.00 / Soybeans: $975.50
+Brent Crude: $72.81 / NatGas: $3.67 / Gasoline: $1.95
 
 EQUITIES:
 
-SPY: $602.80 / QQQ: $520.60 / DIA: $443.69
-IWM: $236.80 / VEA: $50.24 / VWO: $46.63
-VTI: $299.39 / CALF: $47.05 / SPD: $34.93
+SPY: $594.11 / QQQ: $522.29 / DIA: $428.72
+IWM: $221.35 / VEA: $47.84 / VWO: $44.58
+VTI: $293.63 / SLYV: $87.39 / SPD: $33.98
 
 ~~~
 
-Last updated: 2024-12-11 14:16:08 UTC
+Last updated: 2024-12-23 20:44:38 UTC
 
 Source: https://github.com/84adam/lazy-macro
 

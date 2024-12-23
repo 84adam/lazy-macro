@@ -380,8 +380,8 @@ if __name__ == '__main__':
     vti, vti_e = equity_price('VTI')
     vti = check_error(vti, vti_e)
 
-    calf, calf_e = equity_price('CALF')
-    calf = check_error(calf, calf_e)
+    slyv, slyv_e = equity_price('SLYV')
+    slyv = check_error(slyv, slyv_e)
 
     spd, spd_e = equity_price('SPD')
     spd = check_error(spd, spd_e)
@@ -446,9 +446,9 @@ if __name__ == '__main__':
         print(f"IWM: ${iwm} / VEA: ${vea} / VWO: ${vwo}")
 
     try:
-        print(f"VTI: ${vti:.2f} / CALF: ${calf:.2f} / SPD: ${spd:.2f}")
+        print(f"VTI: ${vti:.2f} / SLYV: ${slyv:.2f} / SPD: ${spd:.2f}")
     except:
-        print(f"VTI: ${vti} / CALF: ${calf} / SPD: ${spd}")
+        print(f"VTI: ${vti} / SLYV: ${slyv} / SPD: ${spd}")
     print("\n~~~\n")
 
     now_utc = datetime.now(timezone.utc)
