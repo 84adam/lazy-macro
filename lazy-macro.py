@@ -131,7 +131,7 @@ def get_yield_curve():
     get yield curve history from US Treasury for current month
     """
     current_year = datetime.now().year
-    current_month = datetime.now().month
+    current_month = f"{datetime.now().month:02d}"
     try:
         # current day and month
         url = f"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/all/{current_year}{current_month}?type=daily_treasury_yield_curve&field_tdr_date_value_month={current_year}{current_month}&page&_format=csv"
@@ -155,7 +155,7 @@ def get_yield_curve():
             # if errors, use last day of last month instead
             lmd = last_day_of_previous_month()
             current_year = lmd.year
-            current_month = lmd.month
+            current_month = f"{lmd.month:02d}"
             url = f"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/all/{current_year}{current_month}?type=daily_treasury_yield_curve&field_tdr_date_value_month={current_year}{current_month}&page&_format=csv"
             s = requests.get(url).content
             df = pd.read_csv(io.StringIO(s.decode('utf-8')))
